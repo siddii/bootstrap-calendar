@@ -1,0 +1,23 @@
+
+body {
+    padding-top: 20px;
+}
+
+.month-caption-row{
+    cursor: pointer;
+}
+
+.today {
+    font-weight: bold;
+}
+
+.td-day {
+    width: 60px;
+}
+
+div.note {
+    font-style: italic;
+}
+
+
+
