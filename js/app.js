@@ -3,7 +3,7 @@ var calendar = null;
 var monthsContainer = ['prev-month', 'current-month', 'next-month'];
 
 $(function () {
-  calendar = new Calendar($('#current-month'), calDate, launchEditNotesModal, fillNotes);
+  calendar = new Calendar($('#current-month'), calDate, launchNotesModal, loadNotes);
   showCurrentMonthCaption();
 
   $('.prev-month').click(function () {
@@ -25,7 +25,7 @@ $(function () {
     calDate = new Date($selYear.val(), $selMonth.val(), 1);
     $('#selectDateModal').modal('hide');
     var $currentMonthContainer = $('#' + $('.item.active').attr('id'));
-    calendar = new Calendar($currentMonthContainer, calDate, launchEditNotesModal, fillNotes);
+    calendar = new Calendar($currentMonthContainer, calDate, launchNotesModal, loadNotes);
     showCurrentMonthCaption();
   });
 
@@ -55,7 +55,7 @@ $(function () {
   })
 });
 
-function launchEditNotesModal() {
+function launchNotesModal() {
   var clickedCell = $(this);
   var $editNotesModal = $('#editNotesModal');
   $editNotesModal.data('clicked-cell', clickedCell);
@@ -81,7 +81,7 @@ function replaceHTMLEntities(html) {
   }) );
 }
 
-function fillNotes() {
+function loadNotes() {
   $.get("/index.php/getNotes/" + (calDate.getMonth() + 1) + '-' + calDate.getFullYear(), function (data) {
     $(data).find('div.note').each(function (i, note) {
       updateNote(note);
@@ -136,13 +136,13 @@ function scrollCalendar(scrollMonths) {
   if (scrollMonths > 0) {
     var selectIdx = ++currentIdx >= monthsContainer.length ? 0 : currentIdx;
     var $nextMonth = $('#' + monthsContainer[selectIdx]);
-    calendar = new Calendar($nextMonth, calDate, launchEditNotesModal, fillNotes);
+    calendar = new Calendar($nextMonth, calDate, launchNotesModal, loadNotes);
     $('.calendar-carousel').carousel('next');
   }
   else {
     var selectIdx = --currentIdx < 0 ? monthsContainer.length - 1 : currentIdx;
     var $prevMonth = $('#' + monthsContainer[selectIdx]);
-    calendar = new Calendar($prevMonth, calDate, launchEditNotesModal, fillNotes);
+    calendar = new Calendar($prevMonth, calDate, launchNotesModal, loadNotes);
     $('.calendar-carousel').carousel('prev');
   }
   showCurrentMonthCaption();
