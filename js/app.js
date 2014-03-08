@@ -33,20 +33,10 @@ $(function () {
     var $editNotesModal = $('#editNotesModal');
     var clickedCell = $editNotesModal.data('clicked-cell');
 
-    var noteContent = $editNotesModal.find('textarea.note').val().trim();
-    var data = clickedCell.find('.note').length > 0 ?
-    {id: clickedCell.find('.note').data('id'),
-      notes: noteContent,
-      date: clickedCell.data('date')} :
-    {notes: noteContent,
-      date: clickedCell.data('date')};
-    $.post('/index.php/saveNotes/', data, function (response) {
-      $(response).find('div.note').each(function (i, note) {
-        console.log('#### response nodes = ', note);
-        updateNote(note);
-      })
-    });
+    console.log('##### VAL ', $editNotesModal.find('textarea.note'));
 
+    var noteContent = $editNotesModal.find('textarea.note').val().trim();
+    saveNotes(clickedCell.data('date'), noteContent);
     $editNotesModal.modal('hide');
   });
 
@@ -69,24 +59,23 @@ function launchNotesModal() {
 
 var entityReplacementChars = {
   "nbsp": " ",
-  "amp" : "&",
+  "amp": "&",
   "quot": "\"",
-  "lt"  : "<",
-  "gt"  : ">"
+  "lt": "<",
+  "gt": ">"
 };
 
 function replaceHTMLEntities(html) {
-  return (html.replace(/&(nbsp|amp|quot|lt|gt);/g, function(match, entity) {
+  return (html.replace(/&(nbsp|amp|quot|lt|gt);/g, function (match, entity) {
     return entityReplacementChars[entity];
   }) );
 }
 
 function loadNotes() {
-  $.get("/index.php/getNotes/" + (calDate.getMonth() + 1) + '-' + calDate.getFullYear(), function (data) {
-    $(data).find('div.note').each(function (i, note) {
-      updateNote(note);
-    })
-  });
+  var notes = localStorage && localStorage['notes'] && localStorage['notes'][(calDate.getMonth() + 1) + '-' + calDate.getFullYear()];
+  for (var i = 0; notes && i < notes.length; i++) {
+    updateNote(note[i]);
+  }
 }
 
 function updateNote(note) {
@@ -116,6 +105,11 @@ function fillYears($selYear) {
 
 function showCurrentMonthCaption() {
   $('.current-month').html(calendar.currentMonthStr());
+}
+
+function saveNotes(dateStr, content) {
+  localStorage['notes'][dateStr] = content;
+  updateNote(content);
 }
 
 function scrollCalendar(scrollMonths) {
