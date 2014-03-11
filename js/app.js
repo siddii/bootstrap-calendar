@@ -33,15 +33,13 @@ $(function () {
     var $editNotesModal = $('#editNotesModal');
     var clickedCell = $editNotesModal.data('clicked-cell');
 
-    console.log('##### VAL ', $editNotesModal.find('textarea.note'));
-
-    var noteContent = $editNotesModal.find('textarea.note').val().trim();
+    var noteContent = $editNotesModal.find('textarea#notes').val().trim();
     saveNotes(clickedCell.data('date'), noteContent);
     $editNotesModal.modal('hide');
   });
 
   $('.clear-notes').click(function () {
-    $('#editNotesModal').find('textarea.note').val('');
+    $('#editNotesModal').find('textarea#notes').val('');
   })
 });
 
@@ -52,7 +50,7 @@ function launchNotesModal() {
   var day = clickedCell.find('span.day').html();
   var title = 'Notes for ' + calendar.currentMonthStr().replace(' ', ' ' + day + ', ');
   var note = clickedCell.find('.note');
-  $editNotesModal.find('textarea.note').val(note.length > 0 && note.html().length > 0 ? replaceHTMLEntities(note.html()) : "");
+  $editNotesModal.find('textarea#notes').val(note.length > 0 && note.html().length > 0 ? replaceHTMLEntities(note.html()) : "");
   $editNotesModal.find('.modal-title').html(title);
   $editNotesModal.modal();
 }
@@ -108,8 +106,10 @@ function showCurrentMonthCaption() {
 }
 
 function saveNotes(dateStr, content) {
-  localStorage['notes'][dateStr] = content;
+  var notesObj = localStorage['notes'] || {};	
+  notesObj[dateStr] = content;
   updateNote(content);
+  localStorage['notes'] = notesObj;
 }
 
 function scrollCalendar(scrollMonths) {
