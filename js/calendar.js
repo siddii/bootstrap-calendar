@@ -3,6 +3,7 @@
 	'use strict';
 
 	var Calendar = function(element, options) {
+		var self = this;
 		this.$element = $(element);
 		this.options = options;
 
@@ -12,27 +13,30 @@
 				'July', 'August', 'September', 'October', 'November',
 				'December' ];
 		var daysInMonth = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
-		var monthsContainer = [ 'prev-month', 'current-month', 'next-month' ];
+		var monthsContainer = {};
 
-		var template = '<div class="month-caption-row text-center"><span class="pull-left"><span class="glyphicon glyphicon-chevron-left"></span></span><span class="next-month pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span><h3 class="month-caption"></h3></div><div class="carousel slide calendar-carousel" data-ride="carousel" data-interval="false"><div class="carousel-inner"><div class="item prev-month"><!--Previous Month--></div><div id="current-month" class="item active"></div><div class="item next-month"><!--Next Month--></div></div></div>';
+		var template = '<div class="month-caption-row text-center"><span class="pull-left"><span class="glyphicon glyphicon-chevron-left"></span></span><span class="next-month pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span><h3 class="month-caption"></h3></div><div class="carousel slide calendar-carousel" data-ride="carousel" data-interval="false"><div class="carousel-inner"><div class="item prev-month"><!--Previous Month--></div><div class="item active current-month"></div><div class="item next-month"><!--Next Month--></div></div></div>';
+		
+		this.$element.append(template);
+
 		Calendar.DEFAULTS = {
 
 		};
 
-		var calendarDate = this.options.date || new Date();
+		this.calendarDate = this.options.date || new Date();
 
 		Calendar.prototype.scrollMonth = function(scrollMonths) {
-			var currentMonth = calDate.getMonth() + scrollMonths;
-			calDate.setDate(1);
+			var currentMonth = calendarDate.getMonth() + scrollMonths;
+			calendarDate.setDate(1);
 			if (currentMonth < 0) {
 				currentMonth = 11;
-				calDate.setFullYear(calDate.getFullYear() - 1);
+				calendarDate.setFullYear(calendarDate.getFullYear() - 1);
 			} else if (currentMonth > 11) {
 				currentMonth = 0;
-				calDate.setFullYear(calDate.getFullYear() + 1);
+				calendarDate.setFullYear(calendarDate.getFullYear() + 1);
 			}
-			calDate.setMonth(currentMonth);
-			console.log('##### calDate = ', calDate);
+			calendarDate.setMonth(currentMonth);
+			console.log('##### calDate = ', calendarDate);
 			var currentIdx = monthsContainer.indexOf($('.item.active'));
 
 			if (scrollMonths > 0) {
@@ -52,48 +56,34 @@
 			}
 			showCurrentMonthCaption();
 		};
+		
+		Calendar.prototype.getYear = function() {
+			return this.calendarDate.getFullYear();
+		};
+		
+		Calendar.prototype.getMonth = function () {
+			return this.calendarDate.getMonth();		
+		};
 
-		this.date = {
-			current : {
-				year : function() {
-					return calendarDate.getFullYear();
-				},
-				month : {
-					integer : function() {
-						return calendarDate.getMonth();
-					},
-					string : function() {
-						return months[calendarDate.getMonth()];
-					}
-				},
-				day : function() {
-					return calendarDate.getDate();
-				}
-			},
-			month : {
-				string : function() {
-					return months[calendarDate.getMonth()];
-				},
-				numDays : function(currentMonthView, currentYearView) {
-					return (currentMonthView == 1 && !(currentYearView & 3) && (currentYearView % 1e2 || !(currentYearView % 4e2))) ? 29
-							: daysInMonth[currentMonthView];
-				}
-			}
+		Calendar.prototype.getDay = function () {
+			return this.calendarDate.getDate();		
+		};
+		
+		Calendar.prototype.getMonthString = function () {
+			return months[this.calendarDate.getMonth()];
+		};
+		
+		Calendar.prototype.getNumOfDays = function (){
+			return (this.getMonth() == 1 && !(this.getCurrentYear() & 3) && (this.getCurrentYear() % 1e2 || !(this.getCurrentYear() % 4e2))) ? 29
+					: daysInMonth[this.getMonth()];			
 		};
 
 		Calendar.prototype.render = function() {
-			var $container = this.$element;
-			$container.append(template);
+			
+			var firstOfMonth = new Date(this.getYear(),
+					this.getMonth(), 1).getDay(), numDays = this.getNumOfDays();
 
-			this.element = $container[0];
-			this.currentYearView = this.date.current.year();
-			this.currentMonthView = this.date.current.month.integer();
-
-			var firstOfMonth = new Date(this.currentYearView,
-					this.currentMonthView, 1).getDay(), numDays = this.date.month
-					.numDays(this.currentMonthView, this.currentYearView);
-
-			var calendarContainer = $container.find('.item.active');
+			var calendarContainer = this.$element.find('.item.active').html('');
 
 			var calendar = buildNode('table', null, buildNode('thead', null,
 					buildNode('tr', {
@@ -107,7 +97,7 @@
 
 			calendarContainer.append(calendar);
 
-			$container.append(calendarContainer);
+			this.$element.append(calendarContainer);
 
 			this.showMonthCaption();
 
@@ -116,7 +106,7 @@
 
 		Calendar.prototype.showMonthCaption = function() {
 			this.$element.find('.month-caption').html(
-					this.date.month.string() + ', ' + this.date.current.year());
+					this.getMonthString() + ', ' + this.getYear());
 		};
 
 		function buildNode(nodeName, attributes, content) {
@@ -203,8 +193,8 @@
 
 		function formatDate(dd) {
 			dd = dd.toString();
-			var yyyy = calendarDate.getFullYear().toString();
-			var mm = (calendarDate.getMonth() + 1).toString();
+			var yyyy = self.calendarDate.getFullYear().toString();
+			var mm = (self.calendarDate.getMonth() + 1).toString();
 			return yyyy + '-' + (mm[1] ? mm : "0" + mm[0]) + '-'
 					+ (dd[1] ? dd : "0" + dd[0]);
 		}
