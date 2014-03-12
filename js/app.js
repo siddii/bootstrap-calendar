@@ -2,6 +2,9 @@ var calDate = new Date();
 var calendar = null;
 
 $(function () {
+	
+	/*
+	
   calendar = new Calendar($('#current-month'), calDate, launchNotesModal, loadNotes);
   showCurrentMonthCaption();
 
@@ -39,7 +42,8 @@ $(function () {
 
   $('.clear-notes').click(function () {
     $('#editNotesModal').find('textarea#notes').val('');
-  })
+  });
+  */
 });
 
 function launchNotesModal() {
@@ -100,9 +104,6 @@ function fillYears($selYear) {
   $selYear.val(calDate.getFullYear());
 }
 
-function showCurrentMonthCaption() {
-  $('.current-month').html(calendar.currentMonthStr());
-}
 
 function saveNotes(dateStr, content) {
   var notesObj = localStorage['notes'] || {};	
