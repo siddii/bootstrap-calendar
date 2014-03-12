@@ -1,12 +1,46 @@
 
 
+
 var Calendar = function ($container, calDate, dayClickHandler, postRenderCallback) {
 
  
   var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];	
+  var monthsContainer = ['prev-month', 'current-month', 'next-month'];
 
   var currentDate = calDate || new Date();
+
+  this.scrollMonth = function (scrollMonths) {
+  var calDate = currentDate;	
+  var currentMonth = calDate.getMonth() + scrollMonths;
+  calDate.setDate(1);
+  if (currentMonth < 0) {
+    currentMonth = 11;
+    calDate.setFullYear(calDate.getFullYear() - 1);
+  }
+  else if (currentMonth > 11) {
+    currentMonth = 0;
+    calDate.setFullYear(calDate.getFullYear() + 1);
+  }
+  calDate.setMonth(currentMonth);
+  console.log('##### calDate = ', calDate);
+  var currentIdx = monthsContainer.indexOf($('.item.active').attr('id'));
+
+  if (scrollMonths > 0) {
+    var selectIdx = ++currentIdx >= monthsContainer.length ? 0 : currentIdx;
+    var $nextMonth = $('#' + monthsContainer[selectIdx]);
+    calendar = new Calendar($nextMonth, calDate, launchNotesModal, loadNotes);
+    $('.calendar-carousel').carousel('next');
+  }
+  else {
+    var selectIdx = --currentIdx < 0 ? monthsContainer.length - 1 : currentIdx;
+    var $prevMonth = $('#' + monthsContainer[selectIdx]);
+    calendar = new Calendar($prevMonth, calDate, launchNotesModal, loadNotes);
+    $('.calendar-carousel').carousel('prev');
+  }
+  showCurrentMonthCaption();
+}
 
 
 
@@ -45,7 +79,7 @@ var Calendar = function ($container, calDate, dayClickHandler, postRenderCallbac
     this.currentYearView = this.date.current.year();
     this.currentMonthView = this.date.current.month.integer();
 
-    this.daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    
 
     var firstOfMonth = new Date(this.currentYearView, this.currentMonthView, 1).getDay(),
       numDays = this.date.month.numDays(this.currentMonthView, this.currentYearView);
