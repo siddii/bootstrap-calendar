@@ -2,7 +2,13 @@
 
 var Calendar = function ($container, calDate, dayClickHandler, postRenderCallback) {
 
+ 
+  var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
   var currentDate = calDate || new Date();
+
+
 
   function buildCalendar($container) {
     $container.find('.calendar').remove();
@@ -16,9 +22,9 @@ var Calendar = function ($container, calDate, dayClickHandler, postRenderCallbac
           integer: function () {
             return currentDate.getMonth();
           },
-          string: function (full, months) {
+          string: function () {
             var date = currentDate.getMonth();
-            return monthToStr(date, full, months);
+            return months[date].length > 3 ? months[date].substring(0, 3) : months[date];
           }
         },
         day: function () {
@@ -26,9 +32,8 @@ var Calendar = function ($container, calDate, dayClickHandler, postRenderCallbac
         }
       },
       month: {
-        string: function (full, currentMonthView, months) {
-          var date = currentMonthView;
-          return monthToStr(date, full, months);
+        string: function () {
+          return months[self.currentMonthView].length > 3 ? months[self.currentMonthView].substring(0, 3) : months[self.currentMonthView];
         },
         numDays: function (currentMonthView, currentYearView) {
           return (currentMonthView == 1 && !(currentYearView & 3) && (currentYearView % 1e2 || !(currentYearView % 4e2))) ? 29 : daysInMonth[currentMonthView];
@@ -37,12 +42,6 @@ var Calendar = function ($container, calDate, dayClickHandler, postRenderCallbac
     };
 
     this.element = $container[0];
-    this.config = {
-      fullCurrentMonth: true,
-      dateFormat: 'F jS, Y',
-      weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-      months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    };
     this.currentYearView = this.date.current.year();
     this.currentMonthView = this.date.current.month.integer();
 
@@ -53,7 +52,7 @@ var Calendar = function ($container, calDate, dayClickHandler, postRenderCallbac
 
     var calendarContainer = $('<div class="calendar"/>');
 
-    var calendar = buildNode('table', null, buildNode('thead', null, buildNode('tr', { className: 'weekdays' }, buildWeekdays(this.config.weekdays))));
+    var calendar = buildNode('table', null, buildNode('thead', null, buildNode('tr', { className: 'weekdays' }, buildWeekdays())));
     $(calendar).addClass('table').addClass('table-bordered');
     this.calendarBody = buildNode('tbody');
     this.calendarBody.appendChild(buildDays(firstOfMonth, numDays, this.currentMonthView, this.currentYearView));
@@ -88,11 +87,8 @@ var Calendar = function ($container, calDate, dayClickHandler, postRenderCallbac
     return element;
   }
 
-  function monthToStr(date, full, months) {
-    return ((full == true) ? months[date] : ((months[date].length > 3) ? months[date].substring(0, 3) : months[date]));
-  }
-
-  function buildWeekdays(weekdays) {
+  
+  function buildWeekdays() {
     var weekdayHtml = document.createDocumentFragment();
     foreach(weekdays, function (weekday) {
       var th = buildNode('th', {}, weekday.substring(0, 3));
@@ -157,11 +153,11 @@ var Calendar = function ($container, calDate, dayClickHandler, postRenderCallbac
   }
 
   this.currentMonthStr = function () {
-    return date.month.string(config.fullCurrentMonth, currentMonthView, self.config.months) + ' ' + currentYearView;
+    return date.month.string(currentMonthView) + ' ' + currentYearView;
   };
 
   this.getMonths = function () {
-    return self.config.months;
+    return months;
   };
 
   function isToday(day, currentMonthView, currentYearView) {
@@ -172,5 +168,3 @@ var Calendar = function ($container, calDate, dayClickHandler, postRenderCallbac
   buildCalendar($container);
   return this;
 };
-
-
