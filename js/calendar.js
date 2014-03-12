@@ -57,8 +57,7 @@ var Calendar = function ($container, calDate, dayClickHandler, postRenderCallbac
             return currentDate.getMonth();
           },
           string: function () {
-            var date = currentDate.getMonth();
-            return months[date].length > 3 ? months[date].substring(0, 3) : months[date];
+            return months[currentDate.getMonth()];
           }
         },
         day: function () {
@@ -67,7 +66,7 @@ var Calendar = function ($container, calDate, dayClickHandler, postRenderCallbac
       },
       month: {
         string: function () {
-          return months[self.currentMonthView].length > 3 ? months[self.currentMonthView].substring(0, 3) : months[self.currentMonthView];
+          return months[self.currentMonthView];
         },
         numDays: function (currentMonthView, currentYearView) {
           return (currentMonthView == 1 && !(currentYearView & 3) && (currentYearView % 1e2 || !(currentYearView % 4e2))) ? 29 : daysInMonth[currentMonthView];
