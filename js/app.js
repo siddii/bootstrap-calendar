@@ -1,17 +1,16 @@
 var calDate = new Date();
 var calendar = null;
-var monthsContainer = ['prev-month', 'current-month', 'next-month'];
 
 $(function () {
   calendar = new Calendar($('#current-month'), calDate, launchNotesModal, loadNotes);
   showCurrentMonthCaption();
 
   $('.prev-month').click(function () {
-    scrollCalendar(-1);
+    calendar.scrollMonth(-1);
   });
 
   $('.next-month').click(function () {
-    scrollCalendar(1);
+    calendar.scrollMonth(1);
   });
 
   $('.current-month').click(function () {
@@ -110,34 +109,4 @@ function saveNotes(dateStr, content) {
   notesObj[dateStr] = content;
   updateNote(content);
   localStorage['notes'] = notesObj;
-}
-
-function scrollCalendar(scrollMonths) {
-  var currentMonth = calDate.getMonth() + scrollMonths;
-  calDate.setDate(1);
-  if (currentMonth < 0) {
-    currentMonth = 11;
-    calDate.setFullYear(calDate.getFullYear() - 1);
-  }
-  else if (currentMonth > 11) {
-    currentMonth = 0;
-    calDate.setFullYear(calDate.getFullYear() + 1);
-  }
-  calDate.setMonth(currentMonth);
-  console.log('##### calDate = ', calDate);
-  var currentIdx = monthsContainer.indexOf($('.item.active').attr('id'));
-
-  if (scrollMonths > 0) {
-    var selectIdx = ++currentIdx >= monthsContainer.length ? 0 : currentIdx;
-    var $nextMonth = $('#' + monthsContainer[selectIdx]);
-    calendar = new Calendar($nextMonth, calDate, launchNotesModal, loadNotes);
-    $('.calendar-carousel').carousel('next');
-  }
-  else {
-    var selectIdx = --currentIdx < 0 ? monthsContainer.length - 1 : currentIdx;
-    var $prevMonth = $('#' + monthsContainer[selectIdx]);
-    calendar = new Calendar($prevMonth, calDate, launchNotesModal, loadNotes);
-    $('.calendar-carousel').carousel('prev');
-  }
-  showCurrentMonthCaption();
 }
