@@ -4,6 +4,8 @@
 
 	var dataNS = 'bs.calendar';
 	
+	var renderEvent = 'render.' + dataNS;
+	
 	var template = '<div class="month-caption-row text-center"><span class="pull-left"><span data-scroll="prev" class="glyphicon glyphicon-chevron-left"></span></span><span data-scroll="next" class="next-month pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span><h3 class="month-caption"></h3></div><div class="carousel slide calendar-carousel" data-ride="carousel" data-interval="false"><div class="carousel-inner"><div class="item"></div><div class="item active"></div><div class="item"></div></div></div>';
 
 	var Calendar = function(element, options) {
@@ -106,6 +108,7 @@
 			$element.append(calendarContainer);
 
 			this.showMonthCaption();
+			
 		};
 
 		Calendar.prototype.showMonthCaption = function() {
@@ -215,7 +218,6 @@
 				.each(function() {
 					var $this = $(this);
 					var data = $this.data(dataNS);
-					console.log('##### data = ', data);
 					var options = $.extend({}, Calendar.DEFAULTS, $this.data(),
 							typeof option == 'object' && option);
 
