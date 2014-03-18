@@ -111,3 +111,4 @@ function saveNotes(dateStr, content) {
   updateNote(content);
   localStorage['notes'] = notesObj;
 }
+	
