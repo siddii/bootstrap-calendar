@@ -3,6 +3,11 @@ var calendar = null;
 
 $(function () {
 	
+	  $('#notes-calendar').on('click', '.month-caption', function () {
+		  $('#selectDateModal').modal();
+	 });
+
+	
 	/*
 	
   calendar = new Calendar($('#current-month'), calDate, launchNotesModal, loadNotes);
@@ -46,7 +51,7 @@ $(function () {
   */
 });
 
-function launchNotesModal() {
+function notesModal() {
   var clickedCell = $(this);
   var $editNotesModal = $('#editNotesModal');
   $editNotesModal.data('clicked-cell', clickedCell);
@@ -111,4 +116,3 @@ function saveNotes(dateStr, content) {
   updateNote(content);
   localStorage['notes'] = notesObj;
 }
-	
