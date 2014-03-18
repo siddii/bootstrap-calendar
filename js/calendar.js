@@ -42,7 +42,8 @@
 		
 		function setCalendarDate(dateStr) {
 			self.calendarDate.setFullYear(dateStr.split('-')[0]);
-			self.calendarDate.setMonth(dateStr.split('-')[1] - 1);				
+			self.calendarDate.setMonth(dateStr.split('-')[1] - 1);
+			return self;
 		}
 		
 		if (this.options.date) {
