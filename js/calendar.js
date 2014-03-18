@@ -38,7 +38,16 @@
 		
 		this.$months = this.$element.find('.item');
 
-		this.calendarDate = this.options.date || new Date();
+		this.calendarDate = new Date();
+		
+		function setCalendarDate(dateStr) {
+			self.calendarDate.setFullYear(dateStr.split('-')[0]);
+			self.calendarDate.setMonth(dateStr.split('-')[1] - 1);				
+		}
+		
+		if (this.options.date) {
+			setCalendarDate(this.options.date);
+		}
 		
 		this.today = new Date();
 
@@ -65,7 +74,9 @@
 				this.$carousel.carousel('prev');
 			}
 		};
-				
+		
+		Calendar.prototype.setCalendarDate = setCalendarDate;
+		
 		Calendar.prototype.getYear = function() {
 			return this.calendarDate.getFullYear();
 		};
@@ -88,6 +99,8 @@
 		};
 
 		Calendar.prototype.render = function($element) {
+			
+			$element = $element || this.$active();
 			
 			var firstOfMonth = new Date(this.getYear(),
 					this.getMonth(), 1).getDay(), numDays = this.getNumOfDays();
@@ -206,7 +219,7 @@
 			return months;
 		};
 
-		this.render(this.$active());
+		this.render();
 		return this;
 	};
 
@@ -253,6 +266,7 @@
 	$(window).on('load', function() {
 		$('[data-toggle="calendar"]').each(function() {
 			var $calendar = $(this);
+			//console.log('###### date = ', $calendar.data('date'));
 			$calendar.calendar($calendar.data());
 		});
 	});
