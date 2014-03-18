@@ -123,7 +123,7 @@
 
 			this.showMonthCaption();
 			
-			this.$element.trigger(renderEvent, $element);			
+			this.$element.trigger(renderEvent, [$element, this]);			
 		};
 
 		Calendar.prototype.showMonthCaption = function() {
