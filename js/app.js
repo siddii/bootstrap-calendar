@@ -1,4 +1,3 @@
-
 $(function() {
 
 	var calDate = new Date();
@@ -7,33 +6,44 @@ $(function() {
 
 	var $notesCalendar = $('#notes-calendar');
 
+	var $selectCalendarModal = $('#selectCalendarModal');
+
 	$notesCalendar.on('click', '.month-caption', function() {
 		fillMonths();
 		fillYears();
-		$('#selectDateModal').modal();
+		$selectCalendarModal.modal();
 	});
 
 	$notesCalendar.on('render.bs.calendar', function(monthContainer) {
 		console.log('Calendar rendered', monthContainer);
 	});
 
+	$('#changeCalendar').click(function() {
+		var dateStr = $selYear.val() + '-' + $selMonth.val();
+		$notesCalendar.data('bs.calendar').setCalendarDate(dateStr).render();
+		$selectCalendarModal.modal('hide');
+	});
+
 	function fillMonths() {
-		var months = $notesCalendar.data('bs.calendar').getMonths();
-		console.log('#### months = ', months);
-		for ( var i = 0; i < months.length; i++) {
-			$selMonth.append('<option value="' + i + '">' + months[i]
-					+ '</option>');
+		if (!$selMonth.html()) {
+			var months = $notesCalendar.data('bs.calendar').getMonths();
+			for ( var i = 0; i < months.length; i++) {
+				$selMonth.append('<option value="' + (i + 1) + '">' + months[i]
+						+ '</option>');
+			}
+			$selMonth.val(calDate.getMonth() + 1);
 		}
-		$selMonth.val(calDate.getMonth());
 	}
 
 	function fillYears() {
-		for ( var year = calDate.getFullYear() - 5; year < calDate
-				.getFullYear() + 5; year++) {
-			$selYear.append('<option value="' + year + '">' + year
-					+ '</option>');
+		if (!$selYear.html()) {
+			for ( var year = calDate.getFullYear() - 5; year < calDate
+					.getFullYear() + 5; year++) {
+				$selYear.append('<option value="' + year + '">' + year
+						+ '</option>');
+			}
+			$selYear.val(calDate.getFullYear());
 		}
-		$selYear.val(calDate.getFullYear());
 	}
 
 	function notesModal() {
