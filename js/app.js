@@ -1,32 +1,57 @@
 $(function() {
 
 	var calDate = new Date();
+	var calendar = null;
 
 	var $selMonth = $('#selMonth'), $selYear = $('#selYear');
 
 	var $notesCalendar = $('#notes-calendar');
 
 	var $selectCalendarModal = $('#selectCalendarModal');
+	var $editNotesModal = $('#editNotesModal');
 
 	$notesCalendar.on('click', '.month-caption', function() {
 		fillMonths();
 		fillYears();
 		$selectCalendarModal.modal();
 	});
+	
+	$notesCalendar.on('click', 'td.day', function() {
+		var clickedCell = $(this);
+		console.log('####### clickedCell = ', clickedCell);
+		$editNotesModal.data('clicked-cell', clickedCell);
+		var day = clickedCell.find('span').html();
+		var title = 'Notes for '
+				+ calendar.getMonthString() + ' ' + day + ', ' + calendar.getYear();
+		var note = clickedCell.find('.note');
+		$editNotesModal
+				.find('textarea#notes')
+				.val(
+						note.length > 0 && note.html().length > 0 ? replaceHTMLEntities(note
+								.html())
+								: "");
+		$editNotesModal.find('.modal-title').html(title);
+		$editNotesModal.modal();
+	});	
 
-	$notesCalendar.on('render.bs.calendar', function(monthContainer) {
+	$notesCalendar.on('render.bs.calendar', function(event, monthContainer, calendarInstance) {
+		
+		calendar = calendar || calendarInstance;
+		
+		console.log('##### calendarInstance = ', calendarInstance);
+		
 		console.log('Calendar rendered', monthContainer);
 	});
 
 	$('#changeCalendar').click(function() {
 		var dateStr = $selYear.val() + '-' + $selMonth.val();
-		$notesCalendar.data('bs.calendar').setCalendarDate(dateStr).render();
+		calendar.setCalendarDate(dateStr).render();
 		$selectCalendarModal.modal('hide');
 	});
 
 	function fillMonths() {
 		if (!$selMonth.html()) {
-			var months = $notesCalendar.data('bs.calendar').getMonths();
+			var months = calendar.getMonths();
 			for ( var i = 0; i < months.length; i++) {
 				$selMonth.append('<option value="' + (i + 1) + '">' + months[i]
 						+ '</option>');
@@ -48,20 +73,6 @@ $(function() {
 
 	function notesModal() {
 		var clickedCell = $(this);
-		var $editNotesModal = $('#editNotesModal');
-		$editNotesModal.data('clicked-cell', clickedCell);
-		var day = clickedCell.find('span.day').html();
-		var title = 'Notes for '
-				+ calendar.currentMonthStr().replace(' ', ' ' + day + ', ');
-		var note = clickedCell.find('.note');
-		$editNotesModal
-				.find('textarea#notes')
-				.val(
-						note.length > 0 && note.html().length > 0 ? replaceHTMLEntities(note
-								.html())
-								: "");
-		$editNotesModal.find('.modal-title').html(title);
-		$editNotesModal.modal();
 	}
 
 	var entityReplacementChars = {
