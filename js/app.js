@@ -35,18 +35,26 @@ $(function() {
 	});	
 
 	$notesCalendar.on('render.bs.calendar', function(event, monthContainer, calendarInstance) {
-		
 		calendar = calendar || calendarInstance;
-		
-		console.log('##### calendarInstance = ', calendarInstance);
-		
 		console.log('Calendar rendered', monthContainer);
+		loadNotes(monthContainer);	
 	});
 
 	$('#changeCalendar').click(function() {
 		var dateStr = $selYear.val() + '-' + $selMonth.val();
 		calendar.setCalendarDate(dateStr).render();
 		$selectCalendarModal.modal('hide');
+	});
+	
+	$('#saveNotes').click(function () { 
+		var clickedCell = $editNotesModal.data('clicked-cell');
+		var noteContent = $editNotesModal.find('textarea#notes').val().trim();
+		saveNotes(clickedCell.data('date'), noteContent);
+		$editNotesModal.modal('hide'); 
+	});
+
+	$('.clear-notes').click(function () {
+		$editNotesModal.find('textarea#notes').val(''); 
 	});
 
 	function fillMonths() {
@@ -90,24 +98,21 @@ $(function() {
 				}));
 	}
 
-	function loadNotes() {
+	function loadNotes(monthContainer) {
 		var notes = localStorage
 				&& localStorage['notes']
 				&& localStorage['notes'][(calDate.getMonth() + 1) + '-'
 						+ calDate.getFullYear()];
+		var days = monthContainer.find('td.day');
 		for ( var i = 0; notes && i < notes.length; i++) {
-			updateNote(note[i]);
+			days.each(function(i, dayNode) {
+				if ($(dayNode).data('date') === $(note).data('date')) {
+					$(dayNode).find('.note').remove();
+					$(dayNode).append(note);
+					return false;
+				}
+			});
 		}
-	}
-
-	function updateNote(note) {
-		$('.td-day').each(function(i, dayNode) {
-			if ($(dayNode).data('date') === $(note).data('date')) {
-				$(dayNode).find('.note').remove();
-				$(dayNode).append(note);
-				return false;
-			}
-		});
 	}
 
 	function saveNotes(dateStr, content) {
@@ -135,15 +140,5 @@ $(function() {
 	 * new Calendar($currentMonthContainer, calDate, launchNotesModal,
 	 * loadNotes); showCurrentMonthCaption(); });
 	 * 
-	 * $('#saveNotes').click(function () { var $editNotesModal =
-	 * $('#editNotesModal'); var clickedCell =
-	 * $editNotesModal.data('clicked-cell');
-	 * 
-	 * var noteContent = $editNotesModal.find('textarea#notes').val().trim();
-	 * saveNotes(clickedCell.data('date'), noteContent);
-	 * $editNotesModal.modal('hide'); });
-	 * 
-	 * $('.clear-notes').click(function () {
-	 * $('#editNotesModal').find('textarea#notes').val(''); });
 	 */
 });
