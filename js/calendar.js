@@ -17,7 +17,6 @@
 				'July', 'August', 'September', 'October', 'November',
 				'December' ];
 		var daysInMonth = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
-		var monthsContainer = {};
 
 		this.$element.append(template);
 		
@@ -31,7 +30,11 @@
 		
 		this.$carousel = this.$element.find('.calendar-carousel'); 
 		
-		this.$active = this.$element.find('.item.active'); 
+		this.$active = function () {
+			return this.$element.find('.item.active'); 
+		};
+		
+		this.$months = this.$element.find('.item');
 
 		this.calendarDate = this.options.date || new Date();
 		
@@ -51,12 +54,12 @@
 			console.log('##### calDate = ', this.calendarDate);
 
 			if (scrollMonths > 0) {				
-				var $nextMonth = this.$active.next('.item');
-				this.render($nextMonth);			
+				var $nextMonth = this.$active().next('.item');
+				this.render($nextMonth.length > 0 ? $nextMonth : $(this.$months[0]));			
 				this.$carousel.carousel('next');
 			} else {
-				var $prevMonth = this.$active.prev('.item');
-				this.render($prevMonth);			
+				var $prevMonth = this.$active().prev('.item');
+				this.render($prevMonth.length > 0 ? $prevMonth : $(this.$months[this.$months.length - 1]));			
 				this.$carousel.carousel('prev');
 			}
 		};
@@ -201,7 +204,7 @@
 			return months;
 		};
 
-		this.render(this.$active);
+		this.render(this.$active());
 		return this;
 	};
 
