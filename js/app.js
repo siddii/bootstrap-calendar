@@ -5,7 +5,13 @@ $(function () {
 	
 	  $('#notes-calendar').on('click', '.month-caption', function () {
 		  $('#selectDateModal').modal();
-	 });
+	  });
+	  
+	  $('#notes-calendar').on('render.bs.calendar', function (monthContainer) {
+		  console.log('Calendar rendered', monthContainer);
+	  });
+
+	  
 
 	
 	/*
