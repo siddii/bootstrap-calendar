@@ -34,6 +34,8 @@
 		this.$active = this.$element.find('.item.active'); 
 
 		this.calendarDate = this.options.date || new Date();
+		
+		this.today = new Date();
 
 		Calendar.prototype.scrollMonth = function(scrollMonths) {
 			var currentMonth = this.calendarDate.getMonth() + scrollMonths;
@@ -58,7 +60,7 @@
 				this.$carousel.carousel('prev');
 			}
 		};
-		
+				
 		Calendar.prototype.getYear = function() {
 			return this.calendarDate.getFullYear();
 		};
@@ -93,8 +95,7 @@
 					}, buildWeekdays())));
 			$(calendar).addClass('table').addClass('table-bordered');
 			this.calendarBody = buildNode('tbody');
-			this.calendarBody.appendChild(buildDays(firstOfMonth, numDays,
-					this.currentMonthView, this.currentYearView));
+			this.calendarBody.appendChild(buildDays(firstOfMonth, numDays));
 			calendar.appendChild(this.calendarBody);
 
 			calendarContainer.append(calendar);
@@ -148,8 +149,7 @@
 			}
 		}
 
-		function buildDays(firstOfMonth, numDays, currentMonthView,
-				currentYearView) {
+		function buildDays(firstOfMonth, numDays) {
 			var calendarBody = document.createDocumentFragment(), row = buildNode('tr'), dayCount = 0, i;
 
 			for (i = 1; i <= firstOfMonth; i++) {
@@ -164,20 +164,18 @@
 					dayCount = 0;
 				}
 
-				var todayClassName = isToday(i, currentMonthView,
-						currentYearView) ? {
-					className : 'today active'
-				} : null;
-				var td = buildNode('td', todayClassName, buildNode('span', {
+				var todayClassName = (self.getDay() == i && self.getMonth() == self.today.getMonth() && self.getYear() == self.today.getFullYear()) ? 'today active' : '';
+				
+				
+				var td = buildNode('td', '', buildNode('span', {
 					className : 'day'
 				}, i));
 				var $td = $(td);
-				$td.addClass('text-center').addClass('td-day').data('date',
+				
+
+				$td.addClass('text-center').addClass(todayClassName).addClass('td-day').data('date',
 						formatDate(i));
 
-				//				if (dayClickHandler) {
-				//					$td.click(dayClickHandler)
-				//				}
 				row.appendChild(td);
 				dayCount++;
 			}
@@ -202,13 +200,6 @@
 		Calendar.prototype.getMonths = function() {
 			return months;
 		};
-
-		function isToday(day, currentMonthView, currentYearView) {
-			var today = new Date();
-			return day == today.getDate()
-					&& currentMonthView == today.getMonth()
-					&& currentYearView == today.getFullYear();
-		}
 
 		this.render(this.$active);
 		return this;
