@@ -109,6 +109,7 @@
 
 			this.showMonthCaption();
 			
+			this.$element.trigger(renderEvent, $element);			
 		};
 
 		Calendar.prototype.showMonthCaption = function() {
@@ -173,13 +174,11 @@
 				var todayClassName = (self.today.getDate() == i && self.getMonth() == self.today.getMonth() && self.getYear() == self.today.getFullYear()) ? 'today active' : '';
 				
 				
-				var td = buildNode('td', '', buildNode('span', {
-					className : 'day'
-				}, i));
+				var td = buildNode('td', '', buildNode('span', '', i));
 				var $td = $(td);
 				
 
-				$td.addClass('text-center').addClass(todayClassName).addClass('td-day').data('date',
+				$td.addClass('text-center').addClass(todayClassName).addClass('day').data('date',
 						formatDate(i));
 
 				row.appendChild(td);
