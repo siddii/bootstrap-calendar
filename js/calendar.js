@@ -1,6 +1,10 @@
-+function($) {
+!function($) {
 
 	'use strict';
+
+	var dataNS = 'bs.calendar';
+	
+	var template = '<div class="month-caption-row text-center"><span class="pull-left"><span data-scroll="prev" class="glyphicon glyphicon-chevron-left"></span></span><span data-scroll="next" class="next-month pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span><h3 class="month-caption"></h3></div><div class="carousel slide calendar-carousel" data-ride="carousel" data-interval="false"><div class="carousel-inner"><div class="item"></div><div class="item active"></div><div class="item"></div></div></div>';
 
 	var Calendar = function(element, options) {
 		var self = this;
@@ -15,46 +19,44 @@
 		var daysInMonth = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
 		var monthsContainer = {};
 
-		var template = '<div class="month-caption-row text-center"><span class="pull-left"><span class="glyphicon glyphicon-chevron-left"></span></span><span class="next-month pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span><h3 class="month-caption"></h3></div><div class="carousel slide calendar-carousel" data-ride="carousel" data-interval="false"><div class="carousel-inner"><div class="item prev-month"><!--Previous Month--></div><div class="item active current-month"></div><div class="item next-month"><!--Next Month--></div></div></div>';
-		
 		this.$element.append(template);
-
-		Calendar.DEFAULTS = {
-
-		};
+		
+		$('[data-scroll="prev"]', this.$element).click(function () {
+			self.scrollMonth(-1);
+		});
+		
+		$('[data-scroll="next"]', this.$element).click(function () {
+			self.scrollMonth(1);
+		});
+		
+		this.$carousel = this.$element.find('.calendar-carousel'); 
+		
+		this.$active = this.$element.find('.item.active'); 
 
 		this.calendarDate = this.options.date || new Date();
 
 		Calendar.prototype.scrollMonth = function(scrollMonths) {
-			var currentMonth = calendarDate.getMonth() + scrollMonths;
-			calendarDate.setDate(1);
+			var currentMonth = this.calendarDate.getMonth() + scrollMonths;
+			this.calendarDate.setDate(1);
 			if (currentMonth < 0) {
 				currentMonth = 11;
-				calendarDate.setFullYear(calendarDate.getFullYear() - 1);
+				this.calendarDate.setFullYear(this.calendarDate.getFullYear() - 1);
 			} else if (currentMonth > 11) {
 				currentMonth = 0;
-				calendarDate.setFullYear(calendarDate.getFullYear() + 1);
+				this.calendarDate.setFullYear(this.calendarDate.getFullYear() + 1);
 			}
-			calendarDate.setMonth(currentMonth);
-			console.log('##### calDate = ', calendarDate);
-			var currentIdx = monthsContainer.indexOf($('.item.active'));
+			this.calendarDate.setMonth(currentMonth);
+			console.log('##### calDate = ', this.calendarDate);
 
-			if (scrollMonths > 0) {
-				var selectIdx = ++currentIdx >= monthsContainer.length ? 0
-						: currentIdx;
-				var $nextMonth = $('#' + monthsContainer[selectIdx]);
-				calendar = new Calendar($nextMonth, calDate, launchNotesModal,
-						loadNotes);
-				$('.calendar-carousel').carousel('next');
+			if (scrollMonths > 0) {				
+				var $nextMonth = this.$active.next('.item');
+				this.render($nextMonth);			
+				this.$carousel.carousel('next');
 			} else {
-				var selectIdx = --currentIdx < 0 ? monthsContainer.length - 1
-						: currentIdx;
-				var $prevMonth = $('#' + monthsContainer[selectIdx]);
-				calendar = new Calendar($prevMonth, calDate, launchNotesModal,
-						loadNotes);
-				$('.calendar-carousel').carousel('prev');
+				var $prevMonth = this.$active.prev('.item');
+				this.render($prevMonth);			
+				this.$carousel.carousel('prev');
 			}
-			showCurrentMonthCaption();
 		};
 		
 		Calendar.prototype.getYear = function() {
@@ -74,16 +76,16 @@
 		};
 		
 		Calendar.prototype.getNumOfDays = function (){
-			return (this.getMonth() == 1 && !(this.getCurrentYear() & 3) && (this.getCurrentYear() % 1e2 || !(this.getCurrentYear() % 4e2))) ? 29
+			return (this.getMonth() == 1 && !(this.getYear() & 3) && (this.getYear() % 1e2 || !(this.getYear() % 4e2))) ? 29
 					: daysInMonth[this.getMonth()];			
 		};
 
-		Calendar.prototype.render = function() {
+		Calendar.prototype.render = function($element) {
 			
 			var firstOfMonth = new Date(this.getYear(),
 					this.getMonth(), 1).getDay(), numDays = this.getNumOfDays();
 
-			var calendarContainer = this.$element.find('.item.active').html('');
+			var calendarContainer = $element.html('');
 
 			var calendar = buildNode('table', null, buildNode('thead', null,
 					buildNode('tr', {
@@ -97,11 +99,9 @@
 
 			calendarContainer.append(calendar);
 
-			this.$element.append(calendarContainer);
+			$element.append(calendarContainer);
 
 			this.showMonthCaption();
-
-			return this;
 		};
 
 		Calendar.prototype.showMonthCaption = function() {
@@ -210,7 +210,7 @@
 					&& currentYearView == today.getFullYear();
 		}
 
-		this.render();
+		this.render(this.$active);
 		return this;
 	};
 
@@ -220,19 +220,15 @@
 		return this
 				.each(function() {
 					var $this = $(this);
-					var data = $this.data('bs.calendar');
+					var data = $this.data(dataNS);
+					console.log('##### data = ', data);
 					var options = $.extend({}, Calendar.DEFAULTS, $this.data(),
 							typeof option == 'object' && option);
 
-					console.log('###### options = ', options.template);
-					var action = typeof option == 'string' ? option
-							: options.show;
-
-					if (!data)
-						$this.data('bs.calendar', (data = new Calendar(this,
-								options)));
-					else if (action)
-						data[action]();
+					if (!data) {
+						$this.data(dataNS, (data = new Calendar($this,
+								options)));						
+					}
 				});
 	};
 
