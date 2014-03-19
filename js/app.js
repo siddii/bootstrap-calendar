@@ -50,12 +50,18 @@ $(function() {
 		var clickedCell = $editNotesModal.data('clicked-cell');
 		var noteContent = $editNotesModal.find('textarea#notes').val().trim();
 		saveNotes(clickedCell.data('date'), noteContent);
+		updateNotes(clickedCell, noteContent);
 		$editNotesModal.modal('hide'); 
 	});
 
 	$('.clear-notes').click(function () {
 		$editNotesModal.find('textarea#notes').val(''); 
 	});
+	
+	function updateNotes(clickedCell, noteContent) {
+		clickedCell.find('div.note-wrapper').remove();
+		clickedCell.append('<div class="note-wrapper"><textarea class="note">' + noteContent + "</textarea></div>");
+	}
 
 	function fillMonths() {
 		if (!$selMonth.html()) {
@@ -118,10 +124,9 @@ $(function() {
 	function saveNotes(dateStr, content) {
 		var notesObj = localStorage['notes'] || {};
 		notesObj[dateStr] = content;
-		updateNote(content);
 		localStorage['notes'] = notesObj;
 	}
-
+	
 	/*
 	 * 
 	 * calendar = new Calendar($('#current-month'), calDate, launchNotesModal,
