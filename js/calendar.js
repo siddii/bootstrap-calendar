@@ -185,7 +185,7 @@
 					dayCount = 0;
 				}
 
-				var todayClassName = (self.today.getDate() == i && self.getMonth() == self.today.getMonth() && self.getYear() == self.today.getFullYear()) ? 'today active' : '';
+				var todayClassName = (self.today.getDate() == i && self.getMonth() == self.today.getMonth() && self.getYear() == self.today.getFullYear()) ? 'today' : '';
 				
 				
 				var td = buildNode('td', '', buildNode('span', '', i));
