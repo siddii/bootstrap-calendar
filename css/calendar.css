@@ -1,8 +1,4 @@
 
-body {
-    padding-top: 20px;
-}
-
 .month-caption-row{
     cursor: pointer;
 }
@@ -26,7 +22,17 @@ textarea.note {
   resize:none; 
   margin:0;
   padding:0;
+  color: #000;
 }
 
+.today {
+	background-color: #444;
+}
+
+.modal {
+	color: #000;
+	text-shadow: none;
+	
+}
 
 
