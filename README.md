@@ -1,4 +1,4 @@
 bootstrap-calendar
 ==================
 
-A simple Bootstrap based Calendar
+A simple Bootstrap plugin for Calendar functionalities.

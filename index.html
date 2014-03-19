@@ -13,24 +13,10 @@
 </head>
 <body>
 <div class="container">
-    <div class="month-caption-row text-center"><span class="prev-month pull-left">
-        <span class="prevMonth"><span class="glyphicon glyphicon-chevron-left"></span></span></span>
-        <span class="next-month pull-right"><span class="nextMonth"><span
-                class="glyphicon glyphicon-chevron-right"></span></span></span>
-
-        <h3 class="current-month"></h3>
-    </div>
-    <div class="carousel slide calendar-carousel" data-ride="carousel" data-interval="false">
-        <div class="carousel-inner">
-            <div id="prev-month" class="item"><!--Previous Month--></div>
-            <div id="current-month" class="item active"></div>
-            <div id="next-month" class="item"><!--Next Month--></div>
-        </div>
-    </div>
-
+	<div id="notes-calendar" class="row" data-toggle="calendar" data-date="2015-11"></div>
 </div>
 
-<div class="modal fade" id="selectDateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="selectCalendarModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -54,7 +40,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="changeDate" type="button" class="btn btn-primary">Change Calendar</button>
+                <button id="changeCalendar" type="button" class="btn btn-primary">Change Calendar</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
         </div>

@@ -11,12 +11,21 @@ body {
     font-weight: bold;
 }
 
-.td-day {
-    width: 60px;
+
+.note-wrapper: {
+	margin-top: 5px;	
 }
 
-div.note {
-    font-style: italic;
+textarea.note {
+  width: 80px; 
+  min-width:80px; 
+  max-width:80px; 
+  height:80px; 
+  min-height:80px;  
+  max-height:80px;
+  resize:none; 
+  margin:0;
+  padding:0;
 }
 
 
