@@ -60,7 +60,7 @@ $(function() {
 	
 	function updateNotes(clickedCell, noteContent) {
 		clickedCell.find('div.note-wrapper').remove();
-		clickedCell.append('<div class="note-wrapper"><textarea class="note">' + noteContent + "</textarea></div>");
+		clickedCell.append('<div class="note-wrapper"><textarea class="note form-control">' + noteContent + "</textarea></div>");
 	}
 
 	function fillMonths() {
