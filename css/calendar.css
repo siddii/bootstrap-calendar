@@ -24,6 +24,7 @@ textarea.note {
   padding:0;
   color: #000;
   background: #999;
+  display: inline-block;
 }
 
 .today {
