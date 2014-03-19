@@ -3,28 +3,26 @@
     cursor: pointer;
 }
 
-.today {
-    font-weight: bold;
-}
-
-
 .note-wrapper: {
 	margin-top: 5px;	
 }
 
 textarea.note {
-  width: 80px; 
-  min-width:80px; 
-  max-width:80px; 
-  height:80px; 
-  min-height:80px;  
-  max-height:80px;
-  resize:none; 
+  width: 50px; 
+  min-width:50px; 
+  max-width:50px; 
+  height:50px; 
+  min-height:50px;  
+  max-height:50px;
   margin:0;
   padding:0;
   color: #000;
   background: #999;
   display: inline-block;
+}
+
+.day {
+	cursor: pointer;
 }
 
 .today {
