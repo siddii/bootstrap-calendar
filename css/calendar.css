@@ -23,6 +23,7 @@ textarea.note {
   margin:0;
   padding:0;
   color: #000;
+  background: #999;
 }
 
 .today {
@@ -34,5 +35,3 @@ textarea.note {
 	text-shadow: none;
 	
 }
-
-
