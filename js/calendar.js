@@ -212,10 +212,11 @@
 			dd = dd.toString();
 			var yyyy = self.calendarDate.getFullYear().toString();
 			var mm = (self.calendarDate.getMonth() + 1).toString();
-			return yyyy + '-' + (mm[1] ? mm : "0" + mm[0]) + '-'
+			var ret = yyyy + '-' + (mm[1] ? mm : "0" + mm[0]) + '-'
 					+ (dd[1] ? dd : "0" + dd[0]);
+			return ret;
 		}
-
+		
 		Calendar.prototype.getMonths = function() {
 			return months;
 		};
