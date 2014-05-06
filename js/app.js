@@ -1,6 +1,8 @@
 $(function() {
+	
+	var storage = new Storage();
 
-	var calDate = new Date();
+	var calDate = storage.has('date') ? new Date(parseInt(localStorage['date'], 10)) : new Date();
 	var calendar = null;
 
 	var $selMonth = $('#selMonth'), $selYear = $('#selYear');
@@ -9,7 +11,21 @@ $(function() {
 
 	var $selectCalendarModal = $('#selectCalendarModal');
 	var $editNotesModal = $('#editNotesModal');
-
+	
+	function Storage() {		
+		var dataStore = window.localStorge || {};		
+		this.get = function (key) {
+			return dataStore[key] || {};
+		};		
+		this.set = function (key, value) {
+			dataStore[key] = value;
+		};
+		this.has = function (key) {
+			return dataStore[key] !== undefined;
+		};
+	}
+	
+	
 	$notesCalendar.on('click', '.month-caption', function() {
 		fillMonths();
 		fillYears();
@@ -116,21 +132,33 @@ $(function() {
 				+ (dd[1] ? dd : "0" + dd[0]);
 		return ret;
 	}
+	
+	function getNotes() {
+		return storage.get('notes');
+	}
+	
+	function setNotes(date, content) {
+		console.log('#### content = ', content, date);
+		var notes = getNotes();
+		notes.push({date: date, content: content});
+	}
+	
 
 	function loadNotes(monthContainer) {
 		console.log('Date = ', formatDate());
-		var notes = localStorage && localStorage['notes'] && JSON.parse(localStorage['notes']);
-		if (notes) {
-			monthContainer.find('td.day').each(function(i, dayNode) {
-				var date = $(dayNode).data('date');
-				if (date && notes[date]) {
-					updateNotes($(dayNode), notes[date]);
-				}
-			});			
+		var notes = getNotes();
+		if ($.isEmptyObject(notes)) {
+			return;
 		}
+		monthContainer.find('td.day').each(function(i, dayNode) {
+			var date = $(dayNode).data('date');
+			if (date && notes[date]) {
+				updateNotes($(dayNode), notes[date]);
+			}
+		});			
 	}
 
 	function saveNotes(dateStr, content) {
-		var notes = localStorage['notes'] && JSON.stringify(localStorage['notes']);
+		setNotes(dateStr, content);
 	}
 });
