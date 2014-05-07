@@ -161,3 +161,4 @@ $(function() {
 		setNotes(dateStr, content);
 	}
 });
+	
