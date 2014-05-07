@@ -3,12 +3,12 @@
 
 	var dataNS = 'bs.calendar';
 
-	var renderEvent = 'render.' + dataNS;
+	var renderMonthEvent = 'render.month.' + dataNS, renderYearEvent = 'render.year.'
+			+ dataNS;
 
 	var monthTemplate = '<div class="month-caption-row text-center"><span class="pull-left"><span data-scroll="prev" class="glyphicon glyphicon-chevron-left"></span></span><span data-scroll="next" class="next-month pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span><h3 class="month-caption"></h3></div><div class="carousel slide calendar-carousel" data-ride="carousel" data-interval="false"><div class="carousel-inner"><div class="item month"></div><div class="item active month"></div><div class="item month"></div></div></div>';
-	
+
 	var yearTemplate = '<div class="year-caption-row text-center"><span class="pull-left"><span data-scroll="prev" class="glyphicon glyphicon-chevron-left"></span></span><span data-scroll="next" class="next-year pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span><h3 class="year-caption"></h3></div><div class="carousel slide calendar-carousel" data-ride="carousel" data-interval="false"><div class="carousel-inner"><div class="item year"></div><div class="item active year"></div><div class="item year"></div></div></div>';
-	
 
 	var weekdays = [ 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
 			'Friday', 'Saturday' ];
@@ -17,22 +17,20 @@
 	var daysInMonth = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
 
 	var Calendar = function(element, options) {
-		
+
 		console.log('##### options = ', options);
-		
+
 		var instance = this;
 		this.$element = $(element);
 		this.options = options;
 		this.calendarDate = null;
-		this.mode = !options.mode ? 'month' : options.mode; 
-				
-		
+		this.mode = !options.mode ? 'month' : options.mode;
+
 		if (!this.$element.html() && this.mode === 'month') {
-			this.$element.append(monthTemplate);			
+			this.$element.append(monthTemplate);
+		} else if (!this.$element.html() && this.mode === 'year') {
+			this.$element.append(yearTemplate);
 		}
-		else if (!this.$element.html() && this.mode === 'year') {
-			this.$element.append(yearTemplate);			
-		}				
 
 		$('[data-scroll="prev"]', this.$element).click(function() {
 			instance.scrollMonth(-1);
@@ -46,26 +44,27 @@
 
 		this.$active = function() {
 			if (this.mode === 'month') {
-				var activeElement = instance.$element.find('.month.active'); 
-				return activeElement.length != 0 ? activeElement : instance.$element.find('.month').first();				
+				var activeElement = instance.$element.find('.month.active');
+				return activeElement.length != 0 ? activeElement
+						: instance.$element.find('.month').first();
+			} else if (this.mode === 'year') {
+				var activeElement = instance.$element.find('.year.active');
+				return activeElement.length != 0 ? activeElement
+						: instance.$element.find('.year').first();
 			}
-			else if (this.mode === 'year') {
-				var activeElement = instance.$element.find('.year.active'); 
-				return activeElement.length != 0 ? activeElement : instance.$element.find('.year').first();				
-			}			
 		};
 
 		this.$months = this.$element.find('.month');
-		
+
 		this.options.date = this.options.date || new Date();
 		this.today = this.options.today || new Date();
-		
+
 		if (this.options.year && this.options.month) {
-			this.setCalendarDate(new Date(this.options.month + '-01-' + this.options.year));
+			this.setCalendarDate(new Date(this.options.month + '-01-'
+					+ this.options.year));
+		} else {
+			this.setCalendarDate(this.options.date);
 		}
-		else {
-			this.setCalendarDate(this.options.date);			
-		}			
 		return this;
 	};
 
@@ -94,7 +93,7 @@
 		}
 	};
 
-	Calendar.prototype.setCalendarDate = function (calendarDate) {
+	Calendar.prototype.setCalendarDate = function(calendarDate) {
 		this.calendarDate = calendarDate;
 		this.render();
 		return this;
@@ -122,15 +121,8 @@
 				: daysInMonth[this.getMonth()];
 	};
 
-	Calendar.prototype.render = function($element) {
-
-		$element = $element || this.$active();
-
-		var firstOfMonth = new Date(this.getYear(), this.getMonth(), 1)
-				.getDay(), numDays = this.getNumOfDays();
-
-		var calendarContainer = $element.html('');
-
+	Calendar.prototype.buildCalendar = function(calDate) {
+		var firstOfMonth = calDate.getDay(), numDays = this.getNumOfDays();
 		var calendar = buildNode('table', null, buildNode('thead', null,
 				buildNode('tr', {
 					className : 'weekdays'
@@ -139,19 +131,47 @@
 		this.calendarBody = buildNode('tbody');
 		this.calendarBody.appendChild(buildDays(this, firstOfMonth, numDays));
 		calendar.appendChild(this.calendarBody);
+		return calendar;
+	};
 
-		calendarContainer.append(calendar);
+	Calendar.prototype.render = function($element) {
 
-		$element.append(calendarContainer);
+		var calInstance = this;
 
-		this.showMonthCaption();
+		$element = $element || this.$active();
 
-		this.$element.trigger(renderEvent, [ $element, this ]);
+		$element.html('');
+
+		if (this.mode === 'month') {
+			$element.append(this.buildCalendar(new Date(this.getYear(), this
+					.getMonth(), 1)));
+			this.showMonthCaption();
+			this.$element.trigger(renderMonthEvent, [ $element, this ]);
+		} else {
+			var html = '<div class="table-responsive"><table class="table">';
+			var months = this.getMonths();
+			months.forEach(function(month, idx) {
+				html += ((idx % 3 === 0) ? '<tr>' : '');
+				var cal = calInstance.buildCalendar(new Date(2014, idx, 1));
+				html += '<td><h5>' + month + '</h5><div>' + cal.outerHTML
+						+ '</div></td>';
+				html += ((idx + 1) % 3 === 0) ? '</tr>' : '';
+			});
+			html += '</table></div>';
+
+			calInstance.$active().append(html);
+			this.showYearCaption();
+			this.$element.trigger(renderYearEvent, [ $element, this ]);
+		}
 	};
 
 	Calendar.prototype.showMonthCaption = function() {
 		this.$element.find('.month-caption').html(
 				this.getMonthString() + ', ' + this.getYear());
+	};
+
+	Calendar.prototype.showYearCaption = function() {
+		this.$element.find('.year-caption').html(this.getYear());
 	};
 
 	function buildNode(nodeName, attributes, content) {
