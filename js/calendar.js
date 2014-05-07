@@ -5,7 +5,10 @@
 
 	var renderEvent = 'render.' + dataNS;
 
-	var template = '<div class="month-caption-row text-center"><span class="pull-left"><span data-scroll="prev" class="glyphicon glyphicon-chevron-left"></span></span><span data-scroll="next" class="next-month pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span><h3 class="month-caption"></h3></div><div class="carousel slide calendar-carousel" data-ride="carousel" data-interval="false"><div class="carousel-inner"><div class="item"></div><div class="item active"></div><div class="item"></div></div></div>';
+	var monthTemplate = '<div class="month-caption-row text-center"><span class="pull-left"><span data-scroll="prev" class="glyphicon glyphicon-chevron-left"></span></span><span data-scroll="next" class="next-month pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span><h3 class="month-caption"></h3></div><div class="carousel slide calendar-carousel" data-ride="carousel" data-interval="false"><div class="carousel-inner"><div class="item month"></div><div class="item active month"></div><div class="item month"></div></div></div>';
+	
+	var yearTemplate = '<div class="year-caption-row text-center"><span class="pull-left"><span data-scroll="prev" class="glyphicon glyphicon-chevron-left"></span></span><span data-scroll="next" class="next-year pull-right"><span class="glyphicon glyphicon-chevron-right"></span></span><h3 class="year-caption"></h3></div><div class="carousel slide calendar-carousel" data-ride="carousel" data-interval="false"><div class="carousel-inner"><div class="item year"></div><div class="item active year"></div><div class="item year"></div></div></div>';
+	
 
 	var weekdays = [ 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday',
 			'Friday', 'Saturday' ];
@@ -14,13 +17,22 @@
 	var daysInMonth = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
 
 	var Calendar = function(element, options) {
+		
+		console.log('##### options = ', options);
+		
 		var instance = this;
 		this.$element = $(element);
 		this.options = options;
 		this.calendarDate = null;
-
-		this.$element.append(template);
+		this.mode = !options.mode ? 'month' : options.mode; 
+				
 		
+		if (!this.$element.html() && this.mode === 'month') {
+			this.$element.append(monthTemplate);			
+		}
+		else if (!this.$element.html() && this.mode === 'year') {
+			this.$element.append(yearTemplate);			
+		}				
 
 		$('[data-scroll="prev"]', this.$element).click(function() {
 			instance.scrollMonth(-1);
@@ -33,20 +45,32 @@
 		this.$carousel = this.$element.find('.calendar-carousel');
 
 		this.$active = function() {
-			return instance.$element.find('.item.active');
+			if (this.mode === 'month') {
+				var activeElement = instance.$element.find('.month.active'); 
+				return activeElement.length != 0 ? activeElement : instance.$element.find('.month').first();				
+			}
+			else if (this.mode === 'year') {
+				var activeElement = instance.$element.find('.year.active'); 
+				return activeElement.length != 0 ? activeElement : instance.$element.find('.year').first();				
+			}			
 		};
 
-		this.$months = this.$element.find('.item');
+		this.$months = this.$element.find('.month');
 		
 		this.options.date = this.options.date || new Date();
 		this.today = this.options.today || new Date();
-				
-		this.setCalendarDate(this.options.date);
+		
+		if (this.options.year && this.options.month) {
+			this.setCalendarDate(new Date(this.options.month + '-01-' + this.options.year));
+		}
+		else {
+			this.setCalendarDate(this.options.date);			
+		}			
 		return this;
 	};
 
-	Calendar.prototype.scrollMonth = function(scrollMonths) {
-		var currentMonth = this.calendarDate.getMonth() + scrollMonths;
+	Calendar.prototype.scrollMonth = function(month) {
+		var currentMonth = this.calendarDate.getMonth() + month;
 		this.calendarDate.setDate(1);
 		if (currentMonth < 0) {
 			currentMonth = 11;
@@ -56,9 +80,7 @@
 			this.calendarDate.setFullYear(this.calendarDate.getFullYear() + 1);
 		}
 		this.calendarDate.setMonth(currentMonth);
-		console.log('##### calDate = ', this.calendarDate);
-
-		if (scrollMonths > 0) {
+		if (month > 0) {
 			var $nextMonth = this.$active().next('.item');
 			this
 					.render($nextMonth.length > 0 ? $nextMonth
