@@ -63,8 +63,7 @@ $(function() {
 	});
 
 	$('#changeCalendar').click(function() {
-		var dateStr = $selYear.val() + '-' + $selMonth.val();
-		calendar.setCalendarDate(dateStr).render();
+		calendar.setCalendarDate(new Date($selMonth.val() + '-01-' + $selYear.val()));
 		$selectCalendarModal.modal('hide');
 	});
 
