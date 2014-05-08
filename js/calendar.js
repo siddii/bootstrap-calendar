@@ -31,14 +31,14 @@
 		} else if (!this.$element.html() && this.mode === 'year') {
 			this.$element.append(yearTemplate);
 		}
-
-		$('[data-scroll="prev"]', this.$element).click(function() {
-			instance.scrollMonth(-1);
+		
+		$('[data-scroll="prev"]', this.$element).click(function (){
+			return instance.mode === 'month' ? instance.scrollMonth(-1) : instance.scrollYear(-1);  
 		});
 
 		$('[data-scroll="next"]', this.$element).click(function() {
-			instance.scrollMonth(1);
-		});
+			return instance.mode === 'month' ? instance.scrollMonth(1) : instance.scrollYear(1);
+		});			
 
 		this.$carousel = this.$element.find('.calendar-carousel');
 
@@ -55,6 +55,9 @@
 		};
 
 		this.$months = this.$element.find('.month');
+		this.$years = this.$element.find('.year');
+		
+		console.log('##### this.$years = ', this.$years);
 
 		this.options.date = this.options.date || new Date();
 		this.today = this.options.today || new Date();
@@ -92,6 +95,28 @@
 			this.$carousel.carousel('prev');
 		}
 	};
+	
+	Calendar.prototype.scrollYear = function(year) {
+		this.calendarDate.setFullYear(this.calendarDate.getFullYear() + year);
+		this.calendarDate.setDate(1);
+		if (year > 0) {
+			console.log('###### $nextYear this.$active() = ', this.$active());
+			var $nextYear = this.$active().next('.item');
+			console.log('###### $nextYear= ', $nextYear);
+			this
+					.render($nextYear.length > 0 ? $nextYear
+							: $(this.$years[0]));
+			this.$carousel.carousel('next', function (nextElem) {
+				console.log('##### nextElem = ', nextElem);	
+			});
+		} else {
+			var $prevYear = this.$active().prev('.item');
+			this.render($prevYear.length > 0 ? $prevYear
+					: $(this.$years[this.$years.length - 1]));
+			this.$carousel.carousel('prev');
+		}
+	};
+	
 
 	Calendar.prototype.setCalendarDate = function(calendarDate) {
 		this.calendarDate = calendarDate;
@@ -139,29 +164,31 @@
 		var calInstance = this;
 
 		$element = $element || this.$active();
-
+		
 		$element.html('');
 
 		if (this.mode === 'month') {
-			$element.append(this.buildCalendar(new Date(this.getYear(), this
-					.getMonth(), 1)));
+			var calDate = new Date(this.getYear(), this
+					.getMonth(), 1);
+			$element.append(this.buildCalendar(calDate));
 			this.showMonthCaption();
-			this.$element.trigger(renderMonthEvent, [ $element, this ]);
+			this.$element.trigger(renderMonthEvent, [ $element, calDate]);
 		} else {
 			var html = '<div class="table-responsive"><table class="table">';
 			var months = this.getMonths();
+			var calDate = calInstance.calendarDate;
 			months.forEach(function(month, idx) {
 				html += ((idx % 3 === 0) ? '<tr>' : '');
-				var cal = calInstance.buildCalendar(new Date(2014, idx, 1));
+				calDate.setMonth(idx);
+				var cal = calInstance.buildCalendar(calDate);
 				html += '<td><h5>' + month + '</h5><div>' + cal.outerHTML
 						+ '</div></td>';
 				html += ((idx + 1) % 3 === 0) ? '</tr>' : '';
 			});
 			html += '</table></div>';
-
-			calInstance.$active().append(html);
+			$element.append(html);
 			this.showYearCaption();
-			this.$element.trigger(renderYearEvent, [ $element, this ]);
+			this.$element.trigger(renderYearEvent, [ $element, calDate]);
 		}
 	};
 
